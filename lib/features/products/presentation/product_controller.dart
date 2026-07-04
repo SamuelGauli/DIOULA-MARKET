@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../catalog/data/catalog_repository.dart';
 import '../data/product_repository.dart';
 import '../domain/product.dart';
 
@@ -20,6 +21,7 @@ class ProductController extends AsyncNotifier<void> {
         await _repo.update(product);
       }
       ref.invalidate(productsByShopProvider(product.shopId));
+      ref.invalidate(allProductsProvider);
       state = const AsyncData(null);
       return true;
     } catch (e) {
@@ -34,6 +36,7 @@ class ProductController extends AsyncNotifier<void> {
     try {
       await _repo.delete(product.id);
       ref.invalidate(productsByShopProvider(product.shopId));
+      ref.invalidate(allProductsProvider);
       state = const AsyncData(null);
       return true;
     } catch (e) {

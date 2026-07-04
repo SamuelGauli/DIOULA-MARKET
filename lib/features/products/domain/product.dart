@@ -61,7 +61,7 @@ class Product {
       price: (map['price'] as num?)?.toDouble() ?? 0,
       stock: (map['stock'] as num?)?.toDouble() ?? 0,
       imageUrl: map['image_url'] as String?,
-      isActive: map['is_active'] as bool? ?? true,
+      isActive: (map['is_active'] as int?) == 1,
       promoPrice: (map['promo_price'] as num?)?.toDouble(),
       saleMode: map['sale_mode'] as String? ?? 'detail',
     );

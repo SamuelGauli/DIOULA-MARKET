@@ -43,7 +43,7 @@ class ProfilePage extends ConsumerWidget {
     }
 
     final profile = ref.watch(currentProfileProvider).value;
-    final email = ref.watch(supabaseProvider).auth.currentUser?.email ?? '';
+    final email = ref.watch(localAuthProvider).currentUserEmail ?? '';
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final name = profile?.displayName ?? 'Utilisateur';
     final role = profile?.role;

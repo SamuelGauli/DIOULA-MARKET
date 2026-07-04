@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/app_image.dart';
 import '../data/shop_repository.dart';
 import '../domain/shop.dart';
 import 'shop_controller.dart';
@@ -91,7 +91,7 @@ class _ShopFormScreenState extends ConsumerState<ShopFormScreen> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    final uid = ref.read(supabaseProvider).auth.currentUser?.id;
+    final uid = ref.read(currentUserIdProvider);
     if (uid == null) return;
 
     setState(() => _loading = true);
@@ -252,7 +252,7 @@ class _BannerLogoPicker extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   if (bannerUrl != null && bannerUrl!.isNotEmpty)
-                    CachedNetworkImage(imageUrl: bannerUrl!, fit: BoxFit.cover)
+                    AppImage(url: bannerUrl!, fit: BoxFit.cover)
                   else
                     const Center(
                       child: Column(
@@ -292,9 +292,9 @@ class _BannerLogoPicker extends StatelessWidget {
                   border: Border.all(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       width: 3),
-                  image: (logoUrl != null && logoUrl!.isNotEmpty)
+                          image: (logoUrl != null && logoUrl!.isNotEmpty)
                       ? DecorationImage(
-                          image: CachedNetworkImageProvider(logoUrl!),
+                          image: AppNetworkProvider.provider(logoUrl!),
                           fit: BoxFit.cover)
                       : null,
                 ),

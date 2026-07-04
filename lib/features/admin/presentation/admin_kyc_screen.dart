@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/app_image.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/user_avatar.dart';
 import '../../profile/domain/profile.dart';
@@ -50,8 +50,8 @@ class AdminKycScreen extends ConsumerWidget {
                     style: const TextStyle(fontWeight: FontWeight.w700)),
               ),
               Flexible(
-                child: CachedNetworkImage(
-                  imageUrl: url,
+                child: AppImage(
+                  url: url,
                   fit: BoxFit.contain,
                   placeholder: (_, __) => const Padding(
                     padding: EdgeInsets.all(40),

@@ -77,7 +77,7 @@ class OrderTrackingScreen extends ConsumerWidget {
         ? formatSlot(liveStart, liveEnd)
         : order.slotLabel;
 
-    final uid = ref.watch(supabaseProvider).auth.currentUser?.id;
+    final uid = ref.watch(currentUserIdProvider);
     final role = ref.watch(currentProfileProvider).value?.role;
     final isCourier = role?.isCourier ?? false;
     final sellerView = role?.isSeller ?? false;

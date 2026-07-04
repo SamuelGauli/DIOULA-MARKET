@@ -1,46 +1,51 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/providers/supabase_provider.dart';
 
-/// Encapsule l'authentification Supabase (email + mot de passe).
+/// Résultat simple d'une action d'authentification.
+class AuthResponse {
+  const AuthResponse({this.session, this.user});
+  final dynamic session;
+  final dynamic user;
+}
+
+/// Encapsule l'authentification locale (email + mot de passe).
 class AuthRepository {
-  AuthRepository(this._client);
-  final SupabaseClient _client;
+  AuthRepository(this._auth);
+  final LocalAuthService _auth;
 
-  User? get currentUser => _client.auth.currentUser;
-  Session? get currentSession => _client.auth.currentSession;
+  String? get currentUser => _auth.currentUserId;
+  String? get currentEmail => _auth.currentUserEmail;
 
-  /// Inscription. Les métadonnées (full_name, phone, role) sont lues par le
-  /// trigger SQL `handle_new_user` pour créer la ligne `profiles`.
+  /// Inscription.
   Future<AuthResponse> signUp({
     required String email,
     required String password,
     required String fullName,
     required String phone,
     required String role,
-  }) {
-    return _client.auth.signUp(
+  }) async {
+    final session = await _auth.signUp(
       email: email,
       password: password,
-      data: {
-        'full_name': fullName,
-        'phone': phone,
-        'role': role,
-      },
+      fullName: fullName,
+      phone: phone,
+      role: role,
     );
+    return AuthResponse(session: session, user: session.userId);
   }
 
   Future<AuthResponse> signIn({
     required String email,
     required String password,
-  }) {
-    return _client.auth.signInWithPassword(email: email, password: password);
+  }) async {
+    final session = await _auth.signIn(email: email, password: password);
+    return AuthResponse(session: session, user: session.userId);
   }
 
-  Future<void> signOut() => _client.auth.signOut();
+  Future<void> signOut() => _auth.signOut();
 }
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository(ref.watch(supabaseProvider));
+  return AuthRepository(ref.watch(localAuthProvider));
 });

@@ -62,6 +62,16 @@ class FeedSaleMode extends Notifier<String> {
 final feedSaleModeProvider =
     NotifierProvider<FeedSaleMode, String>(FeedSaleMode.new);
 
+/// Filtre « catégorie » du flux consommateur : `null` = toutes.
+class FeedCategory extends Notifier<String?> {
+  @override
+  String? build() => null;
+  void select(String? v) => state = v;
+}
+
+final feedCategoryProvider =
+    NotifierProvider<FeedCategory, String?>(FeedCategory.new);
+
 /// Un produit correspond-il au filtre choisi ? Un produit « les deux » apparaît
 /// dans **En détail** comme dans **En gros**.
 bool _matchesSale(CatalogProduct p, String filter) {
@@ -158,6 +168,7 @@ class HomeFeedPage extends ConsumerWidget {
     final position = ref.watch(feedPositionProvider).value;
     final tick = ref.watch(feedTickProvider);
     final commune = profile?.commune;
+    final selectedCategory = ref.watch(feedCategoryProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -198,10 +209,7 @@ class HomeFeedPage extends ConsumerWidget {
               const SizedBox(height: 22),
               const _PromoCarousel(),
               const SizedBox(height: 8),
-              _Categories(
-                onSelect: (c) =>
-                    context.push(AppRoutes.search, extra: c.label),
-              ),
+              const _Categories(),
               const SizedBox(height: 12),
               const _SaleModeFilter(),
               const SizedBox(height: 4),
@@ -225,6 +233,7 @@ class HomeFeedPage extends ConsumerWidget {
                 position: position,
                 commune: commune,
                 tick: tick,
+                category: selectedCategory,
               ),
 
               // ---- Près de vous (boutiques) ----
@@ -265,7 +274,7 @@ class HomeFeedPage extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              _ProductRail(async: productsAsync, take: 8, byRating: true),
+              _ProductRail(async: productsAsync, take: 8, byRating: true, category: selectedCategory),
 
               // ---- Demandes en cours (consommateurs & vendeurs uniquement) ----
               if (showRequests) ...[
@@ -688,12 +697,12 @@ class _PromoCarouselState extends ConsumerState<_PromoCarousel> {
 // ---------------------------------------------------------------------------
 //  CATÉGORIES
 // ---------------------------------------------------------------------------
-class _Categories extends StatelessWidget {
-  const _Categories({required this.onSelect});
-  final void Function(MarketCategory) onSelect;
+class _Categories extends ConsumerWidget {
+  const _Categories();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selected = ref.watch(feedCategoryProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -708,11 +717,16 @@ class _Categories extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(width: 10),
             itemBuilder: (_, i) {
               final c = kCategories[i];
+              final isActive = selected == c.label;
               return CategoryChip(
                 icon: c.icon,
                 label: c.label,
-                color: c.color,
-                onTap: () => onSelect(c),
+                color: isActive ? AppColors.ink : c.color,
+                onTap: () {
+                  ref
+                      .read(feedCategoryProvider.notifier)
+                      .select(isActive ? null : c.label);
+                },
               );
             },
           ),
@@ -779,6 +793,7 @@ class _ProductRail extends ConsumerWidget {
     this.position,
     this.commune,
     this.tick = 0,
+    this.category,
   });
 
   final AsyncValue<List<dynamic>> async;
@@ -790,6 +805,7 @@ class _ProductRail extends ConsumerWidget {
   final LatLng? position;
   final String? commune;
   final int tick;
+  final String? category;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -815,6 +831,7 @@ class _ProductRail extends ConsumerWidget {
           final all = raw
               .cast<CatalogProduct>()
               .where((p) => _matchesSale(p, saleFilter))
+              .where((p) => category == null || p.category == category)
               .toList();
           final List<CatalogProduct> items;
           if (byRating) {

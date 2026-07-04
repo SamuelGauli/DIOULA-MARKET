@@ -46,17 +46,14 @@ import '../../features/products/presentation/products_screen.dart';
 import '../../features/shops/domain/shop.dart';
 import '../../features/shops/presentation/my_shop_screen.dart';
 import '../../features/shops/presentation/shop_form_screen.dart';
-import '../config/env.dart';
 import '../constants/app_constants.dart';
 import '../providers/supabase_provider.dart';
 import 'routes.dart';
 
-/// Écoute la session Supabase + l'attente 2FA pour rafraîchir le router.
+/// Écoute la session locale + l'attente 2FA pour rafraîchir le router.
 class _RouterNotifier extends ChangeNotifier {
   _RouterNotifier(this._ref) {
-    if (Env.isConfigured) {
-      _ref.listen(authStateProvider, (_, __) => notifyListeners());
-    }
+    _ref.listen(authStateProvider, (_, __) => notifyListeners());
     _ref.listen(otpPendingProvider, (_, __) => notifyListeners());
     _ref.listen(guestModeProvider, (_, __) => notifyListeners());
   }
@@ -64,10 +61,7 @@ class _RouterNotifier extends ChangeNotifier {
   final Ref _ref;
 
   String? redirect(GoRouterState state) {
-    // Sans backend configuré, on laisse passer (mode démo sans auth).
-    if (!Env.isConfigured) return null;
-
-    final session = _ref.read(supabaseProvider).auth.currentSession;
+    final session = _ref.read(currentSessionProvider);
     final otpPending = _ref.read(otpPendingProvider);
     final guest = _ref.read(guestModeProvider);
     final loc = state.matchedLocation;

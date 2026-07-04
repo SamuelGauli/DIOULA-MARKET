@@ -21,7 +21,7 @@ class AppNotification {
       id: map['id'] as String,
       type: map['type'] as String? ?? 'info',
       title: map['title'] as String? ?? '',
-      isRead: map['is_read'] as bool? ?? false,
+      isRead: (map['is_read'] as int?) == 1,
       body: map['body'] as String?,
       createdAt: map['created_at'] == null
           ? null

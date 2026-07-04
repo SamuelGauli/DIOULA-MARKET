@@ -80,7 +80,7 @@ class Reservation {
       unitPrice: (map['unit_price'] as num?)?.toDouble() ?? 0,
       totalAmount: (map['total_amount'] as num?)?.toDouble() ?? 0,
       depositAmount: (map['deposit_amount'] as num?)?.toDouble() ?? 0,
-      depositPaid: map['deposit_paid'] as bool? ?? false,
+      depositPaid: (map['deposit_paid'] as int?) == 1,
       refundAmount: (map['refund_amount'] as num?)?.toDouble() ?? 0,
       status: map['status'] as String? ?? 'en_attente',
       deadline: map['deadline'] == null

@@ -1,87 +1,159 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 
+import '../../../core/database/app_database.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../domain/profile.dart';
 
-/// Accès aux profils dans Supabase (table `profiles`).
 class ProfileRepository {
-  ProfileRepository(this._client);
-  final SupabaseClient _client;
+  ProfileRepository(this._db);
+  final AppDatabase _db;
 
-  static const _kycBucket = 'kyc-docs';
-
-  /// Récupère un profil par son id (= id de l'utilisateur auth).
   Future<Profile?> fetch(String id) async {
-    final data =
-        await _client.from('profiles').select().eq('id', id).maybeSingle();
-    return data == null ? null : Profile.fromMap(data);
+    final db = await _db.database;
+    final rows = await db.query('profiles', where: 'id = ?', whereArgs: [id]);
+    if (rows.isEmpty) return null;
+    final row = rows.first;
+    return Profile.fromMap(row);
   }
 
-  /// Met à jour les champs modifiables du profil.
   Future<void> update(Profile profile) async {
-    await _client.from('profiles').update(profile.toMap()).eq('id', profile.id);
+    final db = await _db.database;
+    final data = profile.toMap()
+      ..['updated_at'] = DateTime.now().toIso8601String();
+    await db.update('profiles', data, where: 'id = ?', whereArgs: [profile.id]);
   }
 
-  /// Téléverse une **photo de profil** (bucket public `avatars`, dossier = uid)
-  /// et renvoie son URL publique (à stocker dans `profiles.avatar_url`).
   Future<String> uploadAvatar({
-    required Uint8List bytes,
-    String contentType = 'image/jpeg',
+    required String userId,
+    required File file,
   }) async {
-    final uid = _client.auth.currentUser!.id;
-    final path = '$uid/avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    await _client.storage.from('avatars').uploadBinary(
-          path,
-          bytes,
-          fileOptions: FileOptions(upsert: true, contentType: contentType),
-        );
-    return _client.storage.from('avatars').getPublicUrl(path);
+    if (kIsWeb) {
+      final bytes = await file.readAsBytes();
+      final url = 'data:image/jpeg;base64,${_bytesToBase64(bytes)}';
+      final db = await _db.database;
+      await db.update(
+        'profiles',
+        {'avatar_url': url, 'updated_at': DateTime.now().toIso8601String()},
+        where: 'id = ?',
+        whereArgs: [userId],
+      );
+      return url;
+    }
+    final appDir = await getApplicationDocumentsDirectory();
+    final avatarsDir = Directory('${appDir.path}/avatars');
+    if (!await avatarsDir.exists()) {
+      await avatarsDir.create(recursive: true);
+    }
+    final fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final savedFile = await file.copy('${avatarsDir.path}/$fileName');
+    final localPath = savedFile.path;
+    final db = await _db.database;
+    await db.update(
+      'profiles',
+      {'avatar_url': localPath, 'updated_at': DateTime.now().toIso8601String()},
+      where: 'id = ?',
+      whereArgs: [userId],
+    );
+    return localPath;
   }
 
-  // ---- KYC (vérification d'identité) ----
-
-  /// Téléverse un document KYC dans le bucket privé (dossier = uid).
-  /// [kind] = 'id' ou 'residence'. Renvoie le chemin stocké.
   Future<String> uploadKycDoc({
-    required Uint8List bytes,
+    required String userId,
+    required File file,
     required String kind,
-    String contentType = 'image/jpeg',
   }) async {
-    final uid = _client.auth.currentUser!.id;
-    final path = '$uid/${kind}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    await _client.storage.from(_kycBucket).uploadBinary(
-          path,
-          bytes,
-          fileOptions: FileOptions(upsert: true, contentType: contentType),
-        );
-    return path;
+    if (kIsWeb) {
+      final bytes = await file.readAsBytes();
+      return 'data:image/jpeg;base64,${_bytesToBase64(bytes)}';
+    }
+    final appDir = await getApplicationDocumentsDirectory();
+    final kycDir = Directory('${appDir.path}/kyc_docs');
+    if (!await kycDir.exists()) {
+      await kycDir.create(recursive: true);
+    }
+    final fileName = '${kind}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final savedFile = await file.copy('${kycDir.path}/$fileName');
+    return savedFile.path;
   }
 
-  /// Soumet les 2 pièces (pro) → passe le profil "en vérification".
-  Future<void> submitKyc(String idPath, String residencePath) =>
-      _client.rpc('submit_kyc',
-          params: {'p_id_path': idPath, 'p_residence_path': residencePath});
+  static String _bytesToBase64(Uint8List bytes) {
+    const chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    String result = '';
+    for (var i = 0; i < bytes.length; i += 3) {
+      final b0 = bytes[i];
+      final b1 = i + 1 < bytes.length ? bytes[i + 1] : 0;
+      final b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;
+      result += chars[(b0 >> 2) & 0x3F];
+      result += chars[((b0 << 4) | (b1 >> 4)) & 0x3F];
+      result += i + 1 < bytes.length
+          ? chars[((b1 << 2) | (b2 >> 6)) & 0x3F]
+          : '=';
+      result += i + 2 < bytes.length ? chars[b2 & 0x3F] : '=';
+    }
+    return result;
+  }
 
-  /// Soumet la CNI seule (consommateur) → "en vérification".
-  Future<void> submitCni(String idPath) =>
-      _client.rpc('submit_cni', params: {'p_id_path': idPath});
+  Future<void> submitKyc(
+    String userId,
+    String idPath,
+    String residencePath,
+  ) async {
+    final db = await _db.database;
+    await db.update(
+      'profiles',
+      {
+        'id_doc_path': idPath,
+        'residence_doc_path': residencePath,
+        'verification_status': 'en_attente',
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [userId],
+    );
+  }
 
-  /// Validation simulée (en prod : revue admin / fournisseur KYC).
-  Future<void> simulateVerifyKyc() => _client.rpc('simulate_verify_kyc');
+  Future<void> submitCni(String userId, String idPath) async {
+    final db = await _db.database;
+    await db.update(
+      'profiles',
+      {
+        'id_doc_path': idPath,
+        'verification_status': 'en_attente',
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [userId],
+    );
+  }
+
+  Future<void> simulateVerifyKyc(String userId) async {
+    final db = await _db.database;
+    await db.update(
+      'profiles',
+      {
+        'verification_status': 'verifie',
+        'verified_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [userId],
+    );
+  }
 }
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
-  return ProfileRepository(ref.watch(supabaseProvider));
+  return ProfileRepository(ref.watch(databaseProvider));
 });
 
-/// Profil de l'utilisateur connecté (null si déconnecté).
-/// Se rafraîchit à chaque changement d'état d'authentification.
 final currentProfileProvider = FutureProvider<Profile?>((ref) async {
   ref.watch(authStateProvider);
-  final uid = ref.watch(supabaseProvider).auth.currentUser?.id;
+  final uid = ref.watch(currentUserIdProvider);
   if (uid == null) return null;
   return ref.watch(profileRepositoryProvider).fetch(uid);
 });

@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/format.dart';
 import '../../../core/widgets/app_card.dart';
@@ -31,11 +35,12 @@ class _KycScreenState extends ConsumerState<KycScreen> {
           .pickImage(source: ImageSource.gallery, imageQuality: 70);
       if (x == null) return;
       setState(() => _busy = true);
-      final bytes = await x.readAsBytes();
+      final file = kIsWeb ? File.fromRawPath(await x.readAsBytes()) : File(x.path);
+      final userId = ref.read(currentUserIdProvider)!;
       final path = await ref.read(profileRepositoryProvider).uploadKycDoc(
-            bytes: bytes,
+            userId: userId,
+            file: file,
             kind: kind,
-            contentType: x.mimeType ?? 'image/jpeg',
           );
       setState(() {
         if (kind == 'id') {
@@ -55,9 +60,10 @@ class _KycScreenState extends ConsumerState<KycScreen> {
     if (_idPath == null || _residencePath == null) return;
     setState(() => _busy = true);
     try {
+      final userId = ref.read(currentUserIdProvider)!;
       await ref
           .read(profileRepositoryProvider)
-          .submitKyc(_idPath!, _residencePath!);
+          .submitKyc(userId, _idPath!, _residencePath!);
       ref.invalidate(currentProfileProvider);
       _snack('Documents soumis — en cours de vérification.');
     } catch (e) {
@@ -72,7 +78,8 @@ class _KycScreenState extends ConsumerState<KycScreen> {
     if (_idPath == null) return;
     setState(() => _busy = true);
     try {
-      await ref.read(profileRepositoryProvider).submitCni(_idPath!);
+      final userId = ref.read(currentUserIdProvider)!;
+      await ref.read(profileRepositoryProvider).submitCni(userId, _idPath!);
       ref.invalidate(currentProfileProvider);
       _snack('CNI soumise — en cours de vérification.');
     } catch (e) {
@@ -85,7 +92,8 @@ class _KycScreenState extends ConsumerState<KycScreen> {
   Future<void> _simulateVerify() async {
     setState(() => _busy = true);
     try {
-      await ref.read(profileRepositoryProvider).simulateVerifyKyc();
+      final userId = ref.read(currentUserIdProvider)!;
+      await ref.read(profileRepositoryProvider).simulateVerifyKyc(userId);
       ref.invalidate(currentProfileProvider);
       _snack('Identité vérifiée ✅');
     } catch (e) {

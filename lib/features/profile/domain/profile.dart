@@ -63,7 +63,7 @@ class Profile {
           map['verification_status'] as String? ?? 'non_soumis',
       idDocPath: map['id_doc_path'] as String?,
       residenceDocPath: map['residence_doc_path'] as String?,
-      isActive: map['is_active'] as bool? ?? true,
+      isActive: (map['is_active'] as int?) == 1,
       banReason: map['ban_reason'] as String?,
     );
   }
@@ -77,5 +77,12 @@ class Profile {
         'commune': commune,
         'latitude': latitude,
         'longitude': longitude,
+        'is_active': isActive ? 1 : 0,
+        'ban_reason': banReason,
+        'verification_status': verificationStatus,
+        'id_doc_path': idDocPath,
+        'residence_doc_path': residenceDocPath,
+        'rating_avg': ratingAvg,
+        'rating_count': ratingCount,
       };
 }

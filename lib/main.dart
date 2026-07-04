@@ -1,41 +1,30 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 import 'app.dart';
-import 'core/config/env.dart';
 import 'core/theme/theme_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 1) Charge les variables d'environnement (.env). Ne bloque pas la démo
-  //    si le fichier est absent — on affiche juste un avertissement.
-  try {
-    await dotenv.load(fileName: '.env');
-  } catch (_) {
-    debugPrint('⚠️  .env introuvable — copie .env.example vers .env.');
+  // Initialiser sqflite selon la plateforme.
+  // - Web : sqflite_ffi_web (IndexedDB)
+  // - Desktop (Windows/macOS/Linux) : sqflite_common_ffi (FFI)
+  // - Mobile (Android/iOS) : pas d'init (plugin natif)
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
   }
 
-  // 2) Initialise Supabase uniquement si les clés sont présentes.
-  //    Permet de lancer l'app pour la démo avant d'avoir configuré le backend.
-  if (Env.isConfigured) {
-    await Supabase.initialize(
-      url: Env.supabaseUrl,
-      // La clé "anon public" du dashboard Supabase. (Param déprécié en faveur
-      // de publishableKey mais toujours fonctionnel et plus simple pour la démo.)
-      // ignore: deprecated_member_use
-      anonKey: Env.supabaseAnonKey,
-    );
-  } else {
-    debugPrint(
-      '⚠️  Supabase non configuré (SUPABASE_URL / SUPABASE_ANON_KEY manquants).',
-    );
-  }
-
-  // 3) Charge les préférences (pour le mode de thème persistant).
+  // Charge les préférences (pour le mode de thème persistant).
   final prefs = await SharedPreferences.getInstance();
 
   runApp(

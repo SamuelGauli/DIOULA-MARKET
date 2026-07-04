@@ -17,7 +17,6 @@ final guestModeProvider = NotifierProvider<GuestMode, bool>(GuestMode.new);
 /// Sert à verrouiller les actions réservées aux comptes (boutique, profil…).
 final isGuestProvider = Provider<bool>((ref) {
   ref.watch(authStateProvider);
-  final hasSession =
-      ref.watch(supabaseProvider).auth.currentSession != null;
+  final hasSession = ref.watch(currentSessionProvider) != null;
   return !hasSession && ref.watch(guestModeProvider);
 });

@@ -47,7 +47,7 @@ class Review {
           : DateTime.tryParse(map['created_at'] as String),
       authorName: author?['full_name'] as String? ?? 'Client',
       authorAvatar: author?['avatar_url'] as String?,
-      isHidden: map['is_hidden'] as bool? ?? false,
+      isHidden: (map['is_hidden'] as int?) == 1,
     );
   }
 }

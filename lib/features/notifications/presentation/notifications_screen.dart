@@ -25,7 +25,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final uid = ref.read(supabaseProvider).auth.currentUser?.id;
+      final uid = ref.read(currentUserIdProvider);
       if (uid != null) {
         ref.read(notificationsRepositoryProvider).markAllRead(uid);
       }

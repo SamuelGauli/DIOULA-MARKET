@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/config/env.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../admin/presentation/admin_dashboard_screen.dart';
 import '../../admin/presentation/admin_hub_screen.dart';
 import '../../auth/presentation/auth_controller.dart';
@@ -42,8 +40,6 @@ class _MainShellState extends ConsumerState<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    if (!Env.isConfigured) return const _NotConfigured();
-
     // Compte suspendu par la modération → message + déconnexion immédiate.
     ref.listen(currentProfileProvider, (_, next) {
       final p = next.value;
@@ -142,35 +138,4 @@ class _NavTab {
   final IconData selectedIcon;
   final String label;
   final Widget page;
-}
-
-class _NotConfigured extends StatelessWidget {
-  const _NotConfigured();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text(AppInfo.appName)),
-      body: const Padding(
-        padding: EdgeInsets.all(24),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.warning_amber, size: 64, color: AppColors.warning),
-              SizedBox(height: 16),
-              Text('Supabase non configuré',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
-              Text(
-                'Copie .env.example → .env et renseigne SUPABASE_URL et '
-                'SUPABASE_ANON_KEY, puis relance l\'application.',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

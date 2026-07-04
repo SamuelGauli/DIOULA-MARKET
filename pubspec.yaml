@@ -36,8 +36,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^3.3.2
   go_router: ^17.0.0
-  supabase_flutter: ^2.15.0
-  flutter_dotenv: ^6.0.1
+  sqflite: ^2.4.1
+  sqflite_common_ffi: ^2.3.3
+  sqflite_common_ffi_web: ^1.1.1
+  path: ^1.9.0
+  path_provider: ^2.1.4
   intl: ^0.20.2
   cached_network_image: ^3.4.1
   google_fonts: ^6.3.2
@@ -95,7 +98,6 @@ flutter:
   # Le fichier .env est chargé par flutter_dotenv et doit être déclaré
   # comme asset. Il reste ignoré par git (voir .gitignore).
   assets:
-    - .env
     - assets/icon/
 
   # To add assets to your application, add an assets section, like this:

@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/user_avatar.dart';
 import '../domain/profile.dart';
@@ -58,10 +62,11 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           .pickImage(source: ImageSource.gallery, imageQuality: 70);
       if (x == null) return;
       setState(() => _picking = true);
-      final bytes = await x.readAsBytes();
+      final file = kIsWeb ? File.fromRawPath(await x.readAsBytes()) : File(x.path);
+      final userId = ref.read(currentUserIdProvider)!;
       final url = await ref.read(profileRepositoryProvider).uploadAvatar(
-            bytes: bytes,
-            contentType: x.mimeType ?? 'image/jpeg',
+            userId: userId,
+            file: file,
           );
       setState(() => _avatarUrl = url);
     } catch (e) {
@@ -96,8 +101,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     }
   }
 
-  void _snack(String m) => ScaffoldMessenger.of(context)
-      .showSnackBar(SnackBar(content: Text(m)));
+  void _snack(String m) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
+  }
 
   @override
   Widget build(BuildContext context) {

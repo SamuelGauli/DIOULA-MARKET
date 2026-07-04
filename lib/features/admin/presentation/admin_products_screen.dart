@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/format.dart';
+import '../../../core/widgets/app_image.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../catalog/data/catalog_repository.dart';
 import '../../products/domain/product.dart';
@@ -73,8 +73,8 @@ class AdminProductsScreen extends ConsumerWidget {
                         height: 44,
                         width: 44,
                         child: (p.imageUrl != null && p.imageUrl!.isNotEmpty)
-                            ? CachedNetworkImage(
-                                imageUrl: p.imageUrl!,
+                            ? AppImage(
+                                url: p.imageUrl!,
                                 fit: BoxFit.cover,
                                 placeholder: (_, __) => const _Thumb(),
                                 errorWidget: (_, __, ___) => const _Thumb(),

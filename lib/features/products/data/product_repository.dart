@@ -1,63 +1,74 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/database/app_database.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../domain/product.dart';
 
-/// Accès aux produits dans Supabase (table `products`).
 class ProductRepository {
-  ProductRepository(this._client);
-  final SupabaseClient _client;
+  ProductRepository(this._db);
+  final AppDatabase _db;
 
-  /// Tous les produits d'une boutique (récents en premier).
+  static String _uuid() {
+    return '${DateTime.now().microsecondsSinceEpoch.toRadixString(16)}-${(10000 + (DateTime.now().microsecond % 90000))}';
+  }
+
   Future<List<Product>> fetchByShop(String shopId) async {
-    final data = await _client
-        .from('products')
-        .select()
-        .eq('shop_id', shopId)
-        .order('created_at', ascending: false);
-    return (data as List)
-        .map((e) => Product.fromMap(e as Map<String, dynamic>))
-        .toList();
+    final db = await _db.database;
+    final data = await db.query(
+      'products',
+      where: 'shop_id = ?',
+      whereArgs: [shopId],
+      orderBy: 'created_at DESC',
+    );
+    return data.map((e) => Product.fromMap(e)).toList();
   }
 
   Future<Product> create(Product product) async {
-    final data = await _client
-        .from('products')
-        .insert(product.toWriteMap())
-        .select()
-        .single();
-    return Product.fromMap(data);
+    final db = await _db.database;
+    final map = product.toWriteMap();
+    map['id'] = product.id.isNotEmpty ? product.id : _uuid();
+    map['created_at'] = DateTime.now().toIso8601String();
+    map['updated_at'] = DateTime.now().toIso8601String();
+    await db.insert('products', map);
+    return product;
   }
 
   Future<Product> update(Product product) async {
-    final data = await _client
-        .from('products')
-        .update(product.toWriteMap())
-        .eq('id', product.id)
-        .select()
-        .single();
-    return Product.fromMap(data);
+    final db = await _db.database;
+    final map = product.toWriteMap();
+    map['updated_at'] = DateTime.now().toIso8601String();
+    await db.update(
+      'products',
+      map,
+      where: 'id = ?',
+      whereArgs: [product.id],
+    );
+    return product;
   }
 
   Future<void> delete(String id) async {
-    await _client.from('products').delete().eq('id', id);
+    final db = await _db.database;
+    await db.delete('products', where: 'id = ?', whereArgs: [id]);
   }
 
-  /// Met (ou retire, si `null`) un prix promo sur un produit (anti-gaspillage).
   Future<void> setPromo(String id, double? promoPrice) async {
-    await _client
-        .from('products')
-        .update({'promo_price': promoPrice}).eq('id', id);
+    final db = await _db.database;
+    await db.update(
+      'products',
+      {
+        'promo_price': promoPrice,
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }
 
 final productRepositoryProvider = Provider<ProductRepository>((ref) {
-  return ProductRepository(ref.watch(supabaseProvider));
+  return ProductRepository(ref.watch(databaseProvider));
 });
 
-/// Liste des produits d'une boutique donnée (paramètre = shopId).
-/// On l'invalide après ajout/édition/suppression pour rafraîchir.
 final productsByShopProvider =
     FutureProvider.family<List<Product>, String>((ref, shopId) async {
   return ref.watch(productRepositoryProvider).fetchByShop(shopId);

@@ -1,49 +1,62 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/database/app_database.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../domain/nearby_shop.dart';
 import 'location_service.dart';
 
-/// Rayon « Tout voir » : assez grand pour renvoyer toutes les boutiques
-/// géolocalisées, où que la démo soit lancée (filet de sécurité soutenance).
 const double kShowAllRadiusKm = 20000;
 
-/// Accès aux boutiques proches via la fonction SQL `nearby_shops`
-/// (Haversine côté serveur, déjà triée par distance croissante).
 class MapRepository {
-  MapRepository(this._client);
-  final SupabaseClient _client;
+  MapRepository(this._db);
+  final AppDatabase _db;
 
   Future<List<NearbyShop>> fetchNearby(
     double lat,
     double lng,
     double radiusKm,
   ) async {
-    final data = await _client.rpc('nearby_shops', params: {
-      'lat': lat,
-      'lng': lng,
-      'radius_km': radiusKm,
-    });
-    return (data as List)
-        .map((e) => NearbyShop.fromMap(e as Map<String, dynamic>))
-        .toList();
+    final db = await _db.database;
+
+    final rows = await db.query(
+      'shops',
+      where: 'is_active = 1 AND latitude IS NOT NULL AND longitude IS NOT NULL',
+    );
+
+    final results = <NearbyShop>[];
+
+    for (final row in rows) {
+      final shopLat = (row['latitude'] as num).toDouble();
+      final shopLng = (row['longitude'] as num).toDouble();
+      final dist = AppDatabase.distanceKm(lat, lng, shopLat, shopLng);
+
+      if (dist <= radiusKm) {
+        results.add(NearbyShop(
+          id: row['id'] as String,
+          name: row['name'] as String,
+          commune: row['commune'] as String?,
+          latitude: shopLat,
+          longitude: shopLng,
+          ratingAvg: (row['rating_avg'] as num?)?.toDouble() ?? 0,
+          distanceKm: dist,
+        ));
+      }
+    }
+
+    results.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+    return results;
   }
 }
 
 final mapRepositoryProvider = Provider<MapRepository>((ref) {
-  return MapRepository(ref.watch(supabaseProvider));
+  return MapRepository(ref.watch(databaseProvider));
 });
 
-/// Position GPS courante de l'appareil.
-/// Relancée par `ref.invalidate(currentPositionProvider)` (bouton « Réessayer »).
 final currentPositionProvider = FutureProvider<LatLng>((ref) {
   return ref.watch(locationServiceProvider).current();
 });
 
-/// Rayon de recherche sélectionné (km). Modifié par les chips de l'écran carte ;
-/// « Tout voir » le pousse à [kShowAllRadiusKm].
 class SelectedRadius extends Notifier<double> {
   @override
   double build() => 10;
@@ -54,7 +67,6 @@ class SelectedRadius extends Notifier<double> {
 final selectedRadiusProvider =
     NotifierProvider<SelectedRadius, double>(SelectedRadius.new);
 
-/// Boutiques proches : dépend de la position GPS **et** du rayon choisi.
 final nearbyShopsProvider = FutureProvider<List<NearbyShop>>((ref) async {
   final pos = await ref.watch(currentPositionProvider.future);
   final radius = ref.watch(selectedRadiusProvider);

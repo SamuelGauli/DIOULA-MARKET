@@ -45,7 +45,7 @@ class RequestDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final requestAsync = ref.watch(requestByIdProvider(requestId));
-    final uid = ref.watch(supabaseProvider).auth.currentUser?.id;
+    final uid = ref.watch(currentUserIdProvider);
     final role =
         ref.watch(currentProfileProvider).value?.role ?? UserRole.consommateur;
 
@@ -435,7 +435,7 @@ class _SellerOfferArea extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(supabaseProvider).auth.currentUser?.id;
+    final uid = ref.watch(currentUserIdProvider);
     final offersAsync = ref.watch(offersForRequestProvider(request.id));
 
     return offersAsync.when(

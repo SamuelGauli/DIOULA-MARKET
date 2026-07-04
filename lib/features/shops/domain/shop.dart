@@ -57,12 +57,10 @@ class Shop {
       phone: map['phone'] as String?,
       latitude: (map['latitude'] as num?)?.toDouble(),
       longitude: (map['longitude'] as num?)?.toDouble(),
-      isActive: map['is_active'] as bool? ?? true,
+      isActive: (map['is_active'] as int?) == 1,
       ratingAvg: (map['rating_avg'] as num?)?.toDouble() ?? 0,
       ratingCount: (map['rating_count'] as num?)?.toInt() ?? 0,
-      ownerVerified:
-          (map['owner'] as Map<String, dynamic>?)?['verification_status'] ==
-              'verifie',
+      ownerVerified: (map['owner_verified'] as int?) == 1,
     );
   }
 
