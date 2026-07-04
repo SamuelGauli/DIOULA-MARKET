@@ -1,0 +1,35 @@
+{
+    "name": "Dioula Market",
+    "short_name": "Dioula Market",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#FBF4EA",
+    "theme_color": "#E0703A",
+    "description": "Marketplace de commerce local (Côte d'Ivoire).",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

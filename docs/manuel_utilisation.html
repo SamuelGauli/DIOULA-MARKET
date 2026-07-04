@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Dioula Market — Manuel d'utilisation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+:root{
+  --clay:#E0703A; --clay-dark:#C85A28; --ocre:#F2A03D; --beige:#C9A06B;
+  --cream:#FBF4EA; --ink:#2A2018; --body:#6f6555; --line:#EFE5D6;
+  --success:#3FA86A; --warning:#E8A93C; --info:#3E84C9; --danger:#E1493B;
+}
+*{box-sizing:border-box;}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+body{font-family:'Poppins','Segoe UI',system-ui,sans-serif;color:var(--ink);
+  font-size:10.5pt;line-height:1.55;margin:0;}
+p{margin:6px 0;} strong{color:var(--clay-dark);}
+/* Couverture */
+.cover{min-height:252mm;border-radius:20px;color:#fff;text-align:center;
+  background:linear-gradient(145deg,#EE8A4E 0%,#E0703A 45%,#C85A28 100%);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:26mm 18mm;page-break-after:always;position:relative;}
+.cover .logo{width:118px;height:118px;border-radius:28px;margin-bottom:22px;
+  box-shadow:0 12px 34px rgba(0,0,0,.28);}
+.cover .kicker{text-transform:uppercase;letter-spacing:4px;font-size:11pt;font-weight:600;opacity:.92;}
+.cover h1{font-size:37pt;font-weight:800;margin:6px 0 4px;}
+.cover .app{font-size:17pt;font-weight:600;opacity:.96;}
+.cover .sub{font-size:11pt;opacity:.9;margin-top:6px;max-width:120mm;}
+.cover .meta{margin-top:32px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);
+  border-radius:16px;padding:16px 26px;font-size:10.5pt;line-height:1.7;}
+.cover .foot{position:absolute;bottom:16mm;font-size:9pt;opacity:.85;letter-spacing:1px;}
+/* Titres */
+h2{color:var(--clay-dark);font-size:15.5pt;margin:22px 0 10px;border-bottom:2px solid var(--line);
+  padding-bottom:6px;page-break-after:avoid;}
+h2 .num{display:inline-block;background:var(--clay);color:#fff;border-radius:8px;padding:0 10px;
+  margin-right:10px;font-size:12.5pt;}
+h3{color:var(--clay);font-size:12pt;margin:15px 0 5px;page-break-after:avoid;}
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:9.6pt;}
+th{background:var(--clay);color:#fff;text-align:left;padding:7px 10px;font-weight:600;}
+td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+tr:nth-child(even) td{background:var(--cream);} tr{page-break-inside:avoid;}
+/* Encadrés */
+.note,.tip,.warn{border-radius:8px;padding:9px 14px;margin:11px 0;font-size:9.8pt;}
+.note{border-left:4px solid var(--info);background:#eff4fb;}
+.tip{border-left:4px solid var(--success);background:#eef7f1;}
+.warn{border-left:4px solid var(--warning);background:#fdf6e7;}
+ul{margin:6px 0 6px 2px;padding-left:18px;} li{margin:3px 0;}
+.small{color:var(--body);font-size:9pt;} hr{border:none;border-top:1px solid var(--line);margin:16px 0;}
+.toc{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:12px 20px;
+  column-count:2;column-gap:26px;font-size:9.8pt;}
+/* Étapes numérotées */
+ol.steps{counter-reset:step;list-style:none;padding-left:0;margin:8px 0;}
+ol.steps>li{counter-increment:step;position:relative;padding:4px 0 4px 34px;margin:4px 0;page-break-inside:avoid;}
+ol.steps>li::before{content:counter(step);position:absolute;left:0;top:3px;width:23px;height:23px;
+  background:var(--clay);color:#fff;border-radius:50%;text-align:center;line-height:23px;
+  font-size:9.5pt;font-weight:700;}
+/* Cartes de rôle */
+.rolecard{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:14px 0;page-break-inside:avoid;}
+.rolecard>.head{padding:9px 16px;color:#fff;font-weight:700;font-size:11.5pt;}
+.rolecard>.body{padding:6px 16px 12px;}
+.head.conso{background:linear-gradient(90deg,#EE8A4E,#E0703A);}
+.head.vendeur{background:linear-gradient(90deg,#F2A03D,#E0703A);}
+.head.livreur{background:linear-gradient(90deg,#3E84C9,#2f6fb0);}
+</style>
+</head>
+<body>
+
+<!-- ===== COUVERTURE ===== -->
+<div class="cover">
+  <img class="logo" src="../assets/icon/app_icon.png" alt="Logo">
+  <div class="kicker">Manuel d'utilisation</div>
+  <h1>Dioula Market</h1>
+  <div class="app">Le marché local, en temps réel</div>
+  <div class="sub">Guide pas à pas pour prendre en main l'application selon votre
+    profil : consommateur, commerçant / producteur, ou livreur.</div>
+  <div class="meta">
+    <b>Projet de fin de module Flutter</b><br>
+    Encadreur : <b>Mr Youssouf TARPILGA</b><br>
+    Document : Manuel d'utilisation &nbsp;•&nbsp; Version 1.0
+  </div>
+  <div class="foot">DIOULA MARKET — GUIDE UTILISATEUR</div>
+</div>
+
+<!-- ===== SOMMAIRE ===== -->
+<h2><span class="num">0</span>Sommaire</h2>
+<div class="toc">
+  1. Premiers pas<br>
+  2. Se connecter (2FA)<br>
+  3. Guide du consommateur<br>
+  4. Guide du commerçant / producteur<br>
+  5. Guide du livreur<br>
+  6. Fonctions communes<br>
+  7. Astuces &amp; questions fréquentes<br>
+</div>
+
+<!-- ===== 1 ===== -->
+<h2><span class="num">1</span>Premiers pas</h2>
+<p>Dioula Market s'utilise sur <strong>téléphone</strong> (Android/iOS) ou dans un
+<strong>navigateur</strong>. À l'ouverture, un écran d'accueil propose :</p>
+<ul>
+  <li><strong>Se connecter</strong> / <strong>Créer un compte</strong> ;</li>
+  <li><strong>Continuer en visiteur</strong> — pour explorer le catalogue et la carte
+      sans compte (les actions comme réserver ou publier une demande restent verrouillées).</li>
+</ul>
+<div class="note">Au moment de créer un compte, on choisit son <b>rôle</b>
+(consommateur, commerçant, producteur ou livreur). Le rôle détermine les écrans
+disponibles.</div>
+
+<!-- ===== 2 ===== -->
+<h2><span class="num">2</span>Se connecter (double authentification)</h2>
+<ol class="steps">
+  <li>Saisir son <strong>email</strong> et son <strong>mot de passe</strong>, puis valider.</li>
+  <li>Un écran de <strong>vérification (2FA)</strong> s'affiche : le
+      <strong>code à 6 chiffres</strong> apparaît à l'écran (SMS simulé pour la démo).</li>
+  <li>Saisir ce code, puis <strong>Vérifier</strong>. Un écran de succès confirme la connexion.</li>
+</ol>
+<div class="tip"><b>Comptes de démonstration</b> (mot de passe <b>demo1234</b>) :
+samira@demo.ci (consommatrice), raoul@demo.ci (commerçant), jacob@demo.ci
+(producteur), kader@demo.ci (livreur), anais@demo.ci (commerçante).</div>
+
+<!-- ===== 3 ===== -->
+<h2><span class="num">3</span>Guide du consommateur</h2>
+
+<div class="rolecard">
+  <div class="head conso">🛍️ Explorer &amp; trouver un produit</div>
+  <div class="body">
+    <ul>
+      <li>L'<strong>accueil</strong> présente les produits, boutiques et producteurs.
+          Les articles des <strong>vendeurs proches</strong> apparaissent en premier.</li>
+      <li>Filtrer avec les puces <strong>Tout / En détail / En gros</strong>.</li>
+      <li><strong>Tirer l'écran vers le bas</strong> pour actualiser et voir d'autres articles.</li>
+      <li>Utiliser la <strong>recherche</strong> (produit, boutique) ou la
+          <strong>carte</strong> pour les boutiques autour de soi.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="rolecard">
+  <div class="head conso">⚡ Publier une demande &amp; négocier</div>
+  <div class="body">
+    <ol class="steps">
+      <li>Ouvrir <strong>Demande</strong> et décrire le besoin (produit, quantité, rayon).</li>
+      <li>Les vendeurs répondent par des <strong>offres</strong> qui s'affichent en direct.</li>
+      <li>Pour une offre : <strong>Accepter</strong>, ou <strong>Négocier</strong> en
+          proposant un autre prix (+ message).</li>
+      <li>Si le vendeur accepte votre prix, l'offre revient au <strong>prix négocié</strong> :
+          il ne reste qu'à confirmer → la <strong>commande</strong> est créée.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="rolecard">
+  <div class="head conso">🧺 Réserver, commander &amp; suivre</div>
+  <div class="body">
+    <ol class="steps">
+      <li>Sur une fiche produit, choisir <strong>Réserver</strong> : quantité, créneau,
+          puis payer l'<strong>acompte</strong> (30 %, paiement simulé).</li>
+      <li>Suivre ses <strong>réservations</strong> et <strong>commandes</strong> depuis
+          le profil ou les services d'accueil.</li>
+      <li>Pour une commande en livraison, ouvrir le <strong>suivi</strong> : la feuille
+          de route avance en temps réel (« le livreur est presque là… »).</li>
+    </ol>
+  </div>
+</div>
+
+<div class="rolecard">
+  <div class="head conso">⭐ Noter &amp; commenter</div>
+  <div class="body">
+    <p>Après un <strong>retrait de réservation</strong> ou une <strong>commande
+    livrée</strong>, un bouton <strong>« Noter la boutique »</strong> apparaît :
+    donner une note (étoiles) et un <strong>commentaire optionnel</strong>. L'avis
+    s'affiche ensuite dans « Avis &amp; commentaires » de la boutique.</p>
+  </div>
+</div>
+
+<!-- ===== 4 ===== -->
+<h2><span class="num">4</span>Guide du commerçant / producteur</h2>
+
+<div class="rolecard">
+  <div class="head vendeur">🏪 Ouvrir &amp; personnaliser sa boutique</div>
+  <div class="body">
+    <ol class="steps">
+      <li>Aller dans <strong>Ma boutique</strong> → <strong>Créer ma boutique</strong>.</li>
+      <li>Renseigner nom, catégorie, commune, adresse, téléphone et
+          <strong>description</strong>.</li>
+      <li>Ajouter une <strong>bannière</strong> (couverture) et un <strong>logo</strong>
+          (photos depuis la galerie).</li>
+      <li>Utiliser <strong>« Voir ma boutique (vue client) »</strong> pour vérifier le
+          rendu public.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="rolecard">
+  <div class="head vendeur">📦 Gérer les produits (promo, gros/détail)</div>
+  <div class="body">
+    <ul>
+      <li><strong>Gérer mes produits</strong> → <strong>+ Ajouter</strong> : nom, prix,
+          unité, stock, image.</li>
+      <li><strong>Type de vente</strong> : En détail, En gros, ou les deux.</li>
+      <li><strong>Promo</strong> : définir un prix promo (anti-gaspillage) → prix barré
+          + badge côté client.</li>
+      <li>Le stock et les notes sont visibles sur chaque produit.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="rolecard">
+  <div class="head vendeur">💬 Répondre aux demandes &amp; contre-offres</div>
+  <div class="body">
+    <ol class="steps">
+      <li>Ouvrir <strong>Demandes</strong> pour voir les besoins ouverts près de vous.</li>
+      <li><strong>Faire une offre</strong> (prix, quantité, délai, message).</li>
+      <li>Si le client <strong>négocie</strong>, choisir <strong>Accepter le prix</strong>
+          ou <strong>Refuser</strong> (prix initial maintenu).</li>
+    </ol>
+  </div>
+</div>
+
+<div class="rolecard">
+  <div class="head vendeur">📊 Réservations, tableau de bord &amp; commandes</div>
+  <div class="body">
+    <ul>
+      <li><strong>Réservations reçues</strong> : confirmer un retrait, puis noter l'acheteur.</li>
+      <li><strong>Commandes &amp; livraisons</strong> : suivre l'avancée de chaque commande.</li>
+      <li><strong>Tableau de bord</strong> : statistiques, diagrammes, stock bas, accès à
+          l'<strong>historique</strong>.</li>
+      <li><strong>Vérification d'identité</strong> : déposer ses pièces pour obtenir le
+          badge « vérifié » (rassure les clients).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 5 ===== -->
+<h2><span class="num">5</span>Guide du livreur</h2>
+<div class="rolecard">
+  <div class="head livreur">🛵 Prendre une course &amp; livrer</div>
+  <div class="body">
+    <ol class="steps">
+      <li>Ouvrir <strong>Courses</strong> : l'onglet <strong>Disponibles</strong> liste
+          les commandes à livrer (le <strong>pool</strong>).</li>
+      <li><strong>Prendre en charge</strong> une course (elle vous est réservée).</li>
+      <li>Dans <strong>Mes courses</strong> (ou le suivi), appuyer sur
+          <strong>« Étape suivante »</strong> pour faire progresser la livraison :
+          récupéré → en route → presque là → arrivé → <strong>livré</strong>.</li>
+      <li>L'onglet <strong>Planning</strong> regroupe vos courses par créneau et rappelle
+          l'action en cours.</li>
+    </ol>
+    <div class="note">L'acheteur et le vendeur voient votre progression <b>en temps
+    réel</b> à chaque étape validée.</div>
+  </div>
+</div>
+
+<!-- ===== 6 ===== -->
+<h2><span class="num">6</span>Fonctions communes</h2>
+<table>
+  <tr><th>Fonction</th><th>Où &amp; comment</th></tr>
+  <tr><td>Photo de profil</td><td>Profil → ✏️ (Modifier mon profil) → toucher l'appareil
+    photo → choisir une image. On y modifie aussi nom, téléphone, commune.</td></tr>
+  <tr><td>Notifications</td><td>Cloche en haut de l'accueil : chaque notification est
+    <b>cliquable</b> et ouvre l'écran concerné (offre, réservation, livraison…).</td></tr>
+  <tr><td>Mode sombre</td><td>Profil → Paramètres → interrupteur <b>Mode sombre</b>
+    (choix mémorisé).</td></tr>
+  <tr><td>Historique</td><td>Profil → <b>Historique de mes actions</b> : journal de vos
+    demandes, offres, commandes, avis…</td></tr>
+  <tr><td>Carte</td><td>Service <b>Carte</b> : boutiques proches sur OpenStreetMap,
+    triées par distance (autorisation GPS demandée).</td></tr>
+  <tr><td>Vérification d'identité</td><td>Profil → <b>Vérification d'identité</b> :
+    déposer une pièce (CNI) ou des documents pro (validation simulée).</td></tr>
+</table>
+
+<!-- ===== 7 ===== -->
+<h2><span class="num">7</span>Astuces &amp; questions fréquentes</h2>
+<h3>Je ne vois pas le code 2FA ?</h3>
+<p>Il est affiché dans l'encadré ambre de l'écran de vérification (SMS simulé pour la
+démo). Utilisez le bouton <strong>Renvoyer le code</strong> au besoin.</p>
+<h3>La localisation ne fonctionne pas ?</h3>
+<p>Autorisez l'accès à la position quand l'app le demande. Sans GPS, le classement se
+fait par <strong>commune</strong>. Sur navigateur, la précision est plus faible que sur
+téléphone.</p>
+<h3>Je ne peux pas réserver / publier une demande ?</h3>
+<p>Ces actions nécessitent un <strong>compte</strong> : en mode visiteur, l'app invite à
+se connecter ou à s'inscrire.</p>
+<h3>Pourquoi un produit apparaît « En gros » et « En détail » ?</h3>
+<p>Le vendeur l'a réglé sur <strong>« les deux »</strong> : il figure alors dans les deux
+filtres.</p>
+
+<hr>
+<p class="small">Dioula Market — Manuel d'utilisation • Projet de fin de module Flutter •
+Encadreur : Mr Youssouf TARPILGA. Document généré aux couleurs de l'application.</p>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Dioula Market — Cahier des charges</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+:root{
+  --clay:#E0703A; --clay-dark:#C85A28; --ocre:#F2A03D; --beige:#C9A06B;
+  --cream:#FBF4EA; --ink:#2A2018; --body:#6f6555; --line:#EFE5D6;
+  --success:#3FA86A; --warning:#E8A93C; --info:#3E84C9; --danger:#E1493B;
+}
+*{box-sizing:border-box;}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+body{font-family:'Poppins','Segoe UI',system-ui,sans-serif;color:var(--ink);
+  font-size:10.5pt;line-height:1.55;margin:0;}
+p{margin:6px 0;}
+strong{color:var(--clay-dark);}
+/* ---------- Couverture ---------- */
+.cover{min-height:252mm;border-radius:20px;color:#fff;text-align:center;
+  background:linear-gradient(145deg,#EE8A4E 0%,#E0703A 45%,#C85A28 100%);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:26mm 18mm;page-break-after:always;position:relative;}
+.cover .logo{width:118px;height:118px;border-radius:28px;margin-bottom:22px;
+  box-shadow:0 12px 34px rgba(0,0,0,.28);}
+.cover .kicker{text-transform:uppercase;letter-spacing:4px;font-size:11pt;
+  font-weight:600;opacity:.92;}
+.cover h1{font-size:37pt;font-weight:800;margin:6px 0 4px;letter-spacing:.5px;}
+.cover .app{font-size:17pt;font-weight:600;opacity:.96;}
+.cover .sub{font-size:11pt;opacity:.9;margin-top:6px;max-width:120mm;}
+.cover .meta{margin-top:32px;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.4);border-radius:16px;padding:16px 26px;
+  font-size:10.5pt;line-height:1.7;}
+.cover .meta b{font-weight:700;}
+.cover .foot{position:absolute;bottom:16mm;font-size:9pt;opacity:.85;
+  letter-spacing:1px;}
+.roles{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.roles span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);
+  border-radius:999px;padding:3px 12px;font-size:9pt;font-weight:600;}
+/* ---------- Titres ---------- */
+h2{color:var(--clay-dark);font-size:15.5pt;margin:22px 0 10px;
+  border-bottom:2px solid var(--line);padding-bottom:6px;page-break-after:avoid;}
+h2 .num{display:inline-block;background:var(--clay);color:#fff;border-radius:8px;
+  padding:0 10px;margin-right:10px;font-size:12.5pt;}
+h3{color:var(--clay);font-size:12pt;margin:15px 0 5px;page-break-after:avoid;}
+/* ---------- Tables ---------- */
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:9.6pt;}
+th{background:var(--clay);color:#fff;text-align:left;padding:7px 10px;font-weight:600;}
+td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+tr:nth-child(even) td{background:var(--cream);}
+tr{page-break-inside:avoid;}
+/* ---------- Encadrés & listes ---------- */
+.note,.tip,.warn{border-radius:8px;padding:9px 14px;margin:11px 0;font-size:9.8pt;}
+.note{border-left:4px solid var(--info);background:#eff4fb;}
+.tip{border-left:4px solid var(--success);background:#eef7f1;}
+.warn{border-left:4px solid var(--warning);background:#fdf6e7;}
+ul{margin:6px 0 6px 2px;padding-left:18px;}
+li{margin:3px 0;}
+.pill{display:inline-block;background:var(--clay);color:#fff;border-radius:999px;
+  padding:1px 9px;font-size:8pt;font-weight:600;vertical-align:middle;}
+.pill.g{background:var(--success);} .pill.o{background:var(--ocre);color:#3a2b12;}
+.pill.b{background:var(--info);} .pill.d{background:var(--danger);}
+.lead{color:var(--body);font-size:10.5pt;}
+.toc{background:var(--cream);border:1px solid var(--line);border-radius:12px;
+  padding:12px 20px;column-count:2;column-gap:26px;font-size:9.8pt;}
+.toc a{color:var(--clay-dark);text-decoration:none;}
+.small{color:var(--body);font-size:9pt;}
+hr{border:none;border-top:1px solid var(--line);margin:16px 0;}
+</style>
+</head>
+<body>
+
+<!-- ================= COUVERTURE ================= -->
+<div class="cover">
+  <img class="logo" src="../assets/icon/app_icon.png" alt="Logo">
+  <div class="kicker">Cahier des charges</div>
+  <h1>Dioula Market</h1>
+  <div class="app">Marketplace de commerce local — Côte d'Ivoire</div>
+  <div class="sub">Relier consommateurs, commerçants, producteurs et livreurs :
+    publier un besoin, recevoir des offres en temps réel, réserver, commander,
+    livrer et se noter.</div>
+  <div class="roles">
+    <span>Consommateur</span><span>Commerçant</span><span>Producteur</span>
+    <span>Livreur</span><span>Admin</span>
+  </div>
+  <div class="meta">
+    <b>Projet de fin de module Flutter</b><br>
+    Encadreur : <b>Mr Youssouf TARPILGA</b><br>
+    Document : Cahier des charges &nbsp;•&nbsp; Version 1.0
+  </div>
+  <div class="foot">DIOULA MARKET — DOCUMENT DE SPÉCIFICATION</div>
+</div>
+
+<!-- ================= SOMMAIRE ================= -->
+<h2><span class="num">0</span>Sommaire</h2>
+<div class="toc">
+  1. Présentation du projet<br>
+  2. Acteurs &amp; périmètre<br>
+  3. Besoins fonctionnels<br>
+  4. Besoins non-fonctionnels<br>
+  5. Contraintes techniques<br>
+  6. Architecture logicielle<br>
+  7. Éléments simulés<br>
+  8. Base de données &amp; sécurité<br>
+  9. Livrables &amp; jalons<br>
+  10. Comptes de démonstration<br>
+</div>
+
+<!-- ================= 1 ================= -->
+<h2><span class="num">1</span>Présentation du projet</h2>
+<h3>1.1 Contexte</h3>
+<p class="lead">En Côte d'Ivoire, le commerce de proximité (marchés, boutiques de
+quartier, producteurs locaux) repose largement sur des échanges informels : il est
+difficile de comparer les prix, de trouver rapidement un produit près de chez soi,
+ou d'organiser une livraison fiable. <strong>Dioula Market</strong> numérise ce
+marché local et fluidifie la mise en relation entre les acteurs.</p>
+
+<h3>1.2 Problématique</h3>
+<ul>
+  <li>Trouver un produit disponible <strong>à proximité</strong> et au bon prix.</li>
+  <li>Permettre au consommateur d'<strong>exprimer un besoin</strong> et de recevoir
+      des propositions concrètes (prix, quantité, délai).</li>
+  <li>Sécuriser les échanges (identités vérifiées, acompte, suivi de livraison).</li>
+  <li>Réduire le <strong>gaspillage</strong> (promotions anti-gaspillage).</li>
+</ul>
+
+<h3>1.3 Objectifs</h3>
+<ul>
+  <li>Offrir une <strong>vitrine</strong> claire du catalogue local (produits &amp;
+      boutiques), consultable même sans compte.</li>
+  <li>Proposer une <strong>demande instantanée</strong> avec offres en temps réel et
+      possibilité de <strong>négociation</strong>.</li>
+  <li>Gérer le cycle complet : <strong>réservation → commande → livraison → notation</strong>.</li>
+  <li>Assurer une expérience <strong>rapide, colorée et cohérente</strong> (charte
+      « marché ivoirien »), en clair comme en sombre.</li>
+</ul>
+
+<!-- ================= 2 ================= -->
+<h2><span class="num">2</span>Acteurs &amp; périmètre</h2>
+<table>
+  <tr><th>Acteur</th><th>Rôle dans l'application</th></tr>
+  <tr><td><span class="pill">Consommateur</span></td><td>Explore le catalogue, publie des demandes, négocie, réserve, commande, suit ses livraisons, note &amp; commente.</td></tr>
+  <tr><td><span class="pill o">Commerçant</span></td><td>Tient une boutique, gère ses produits (stock, promo, gros/détail), répond aux demandes, traite réservations &amp; commandes.</td></tr>
+  <tr><td><span class="pill o">Producteur</span></td><td>Comme le commerçant, orienté production locale (ferme, vivriers).</td></tr>
+  <tr><td><span class="pill b">Livreur</span></td><td>Consulte le pool de courses, prend en charge une livraison et fait avancer les étapes de suivi.</td></tr>
+  <tr><td><span class="pill d">Admin</span></td><td>Rôle de supervision (modération, gestion — périmètre réduit pour la démo).</td></tr>
+  <tr><td><span class="pill g">Visiteur</span></td><td>Consulte l'app en lecture seule (catalogue, carte) ; les actions sont verrouillées jusqu'à la création d'un compte.</td></tr>
+</table>
+<div class="note"><b>Hors périmètre (démo) :</b> paiement réel, envoi SMS réel et
+revue KYC humaine sont <b>simulés</b> (voir §7).</div>
+
+<!-- ================= 3 ================= -->
+<h2><span class="num">3</span>Besoins fonctionnels</h2>
+
+<h3>3.1 Authentification &amp; sécurité</h3>
+<ul>
+  <li>Inscription (email, mot de passe, nom, téléphone, <strong>choix du rôle</strong>).</li>
+  <li>Connexion + <strong>2FA</strong> à chaque connexion : code à usage unique
+      (SMS simulé, affiché à l'écran).</li>
+  <li><strong>Mode visiteur</strong> (exploration sans compte) + invitation à créer un compte.</li>
+  <li><strong>Vérification d'identité</strong> (KYC pro / CNI consommateur) avec dépôt de pièces et badge « vérifié ».</li>
+</ul>
+
+<h3>3.2 Boutiques &amp; produits</h3>
+<ul>
+  <li>Création/édition de boutique : nom, catégorie, commune, adresse, téléphone,
+      <strong>description</strong>, <strong>logo</strong> &amp; <strong>bannière</strong>.</li>
+  <li>CRUD produits : nom, catégorie, unité, prix, stock, image.</li>
+  <li><strong>Promo anti-gaspillage</strong> : prix promo (prix barré + badge).</li>
+  <li><strong>Type de vente</strong> : détail, gros, ou les deux.</li>
+</ul>
+
+<h3>3.3 Catalogue &amp; découverte</h3>
+<ul>
+  <li>Accueil « vitrine » : recherche, services, carrousel, catégories, sections vivantes.</li>
+  <li><strong>Priorité proximité</strong> : les articles des vendeurs proches (GPS,
+      sinon même commune) sont mis en avant.</li>
+  <li><strong>Actualisation</strong> du flux (pull-to-refresh) pour découvrir d'autres articles.</li>
+  <li>Filtre <strong>gros / détail</strong>, fiche produit, fiche boutique (avis &amp; commentaires).</li>
+</ul>
+
+<h3>3.4 Demande instantanée &amp; offres</h3>
+<ul>
+  <li>Le consommateur publie un besoin (produit, quantité, rayon, position).</li>
+  <li>Les vendeurs envoient des <strong>offres</strong> (prix, quantité, délai) — affichées en <strong>temps réel</strong>.</li>
+  <li><strong>Négociation</strong> : le client propose un autre prix (contre-offre) ;
+      le vendeur accepte ou refuse.</li>
+  <li>Acceptation d'une offre → création automatique de la commande.</li>
+</ul>
+
+<h3>3.5 Réservation &amp; paiement (simulé)</h3>
+<ul>
+  <li>Réservation d'un produit avec <strong>acompte</strong> (30 %, écran de paiement simulé).</li>
+  <li>Choix d'un <strong>créneau</strong> de retrait ; annulation possible sous conditions.</li>
+  <li>Décrément automatique du stock (côté base).</li>
+</ul>
+
+<h3>3.6 Commandes &amp; livraison</h3>
+<ul>
+  <li><strong>Pool de livreurs</strong> : les courses disponibles peuvent être prises
+      par n'importe quel livreur (verrou anti-double-prise).</li>
+  <li><strong>Suivi étape par étape</strong> du colis (récupéré → en route → presque
+      là → livré), mis à jour en temps réel par le livreur.</li>
+  <li>Vue acheteur (mes commandes) et vue vendeur (commandes reçues).</li>
+</ul>
+
+<h3>3.7 Notation &amp; commentaires</h3>
+<ul>
+  <li><strong>Notation croisée</strong> (5 étoiles) après un achat : l'acheteur note
+      la boutique, le vendeur note l'acheteur.</li>
+  <li><strong>Commentaire</strong> (optionnel) au moment de noter — uniquement après
+      une réservation retirée ou une <strong>commande livrée</strong>.</li>
+  <li>Recalcul automatique des moyennes ; affichage dans « Avis &amp; commentaires ».</li>
+</ul>
+
+<h3>3.8 Géolocalisation</h3>
+<ul>
+  <li>Carte de proximité (OpenStreetMap) avec les boutiques triées par distance.</li>
+  <li>Calcul de distance (Haversine) côté base et côté app.</li>
+</ul>
+
+<h3>3.9 Tableau de bord, historique &amp; notifications</h3>
+<ul>
+  <li>Tableau de bord commerçant : statistiques + <strong>diagrammes</strong>.</li>
+  <li><strong>Historique</strong> des actions (journal d'audit).</li>
+  <li><strong>Notifications</strong> in-app en temps réel, cliquables.</li>
+  <li>Thème <strong>clair / sombre</strong> persistant.</li>
+</ul>
+
+<!-- ================= 4 ================= -->
+<h2><span class="num">4</span>Besoins non-fonctionnels</h2>
+<table>
+  <tr><th>Exigence</th><th>Description</th></tr>
+  <tr><td>Sécurité</td><td>Row Level Security (RLS) sur toutes les tables ; chaque
+    utilisateur n'accède qu'à ses données ; clé secrète jamais embarquée.</td></tr>
+  <tr><td>Temps réel</td><td>Offres, notifications et suivi de livraison mis à jour
+    sans rafraîchissement (Supabase Realtime).</td></tr>
+  <tr><td>Performance perçue</td><td>Squelettes de chargement, images en cache,
+    transitions fluides.</td></tr>
+  <tr><td>Ergonomie (UX)</td><td>Parcours courts, actions gated claires pour les
+    visiteurs, mini-tutoriel par rôle.</td></tr>
+  <tr><td>Charte graphique</td><td>Palette « marché ivoirien » (terracotta, ocre,
+    beige, crème), police Poppins, mode sombre complet.</td></tr>
+  <tr><td>Portabilité</td><td>Application Flutter multiplateforme (Android, iOS, web)
+    depuis un code unique.</td></tr>
+  <tr><td>Maintenabilité</td><td>Architecture <b>feature-first</b> (domain / data /
+    presentation) ; documentation vivante.</td></tr>
+  <tr><td>Robustesse</td><td>L'accueil ne dépend d'aucune colonne de feature ; lectures
+    tolérantes aux migrations non encore exécutées.</td></tr>
+</table>
+
+<!-- ================= 5 ================= -->
+<h2><span class="num">5</span>Contraintes techniques</h2>
+<table>
+  <tr><th>Couche</th><th>Technologie</th></tr>
+  <tr><td>Langage / UI</td><td>Flutter (Dart 3) — Material 3</td></tr>
+  <tr><td>Gestion d'état</td><td>Riverpod</td></tr>
+  <tr><td>Navigation</td><td>go_router</td></tr>
+  <tr><td>Backend</td><td>Supabase (PostgreSQL, Auth, Storage, Realtime)</td></tr>
+  <tr><td>Carte / GPS</td><td>flutter_map (OpenStreetMap) + geolocator</td></tr>
+  <tr><td>Graphiques</td><td>fl_chart</td></tr>
+  <tr><td>Animations</td><td>flutter_animate</td></tr>
+  <tr><td>Images</td><td>image_picker + cached_network_image</td></tr>
+  <tr><td>Secrets</td><td>flutter_dotenv (fichier .env non versionné)</td></tr>
+</table>
+
+<!-- ================= 6 ================= -->
+<h2><span class="num">6</span>Architecture logicielle</h2>
+<p>Le code est organisé <strong>par fonctionnalité</strong>. Chaque dossier
+<span class="small">lib/features/&lt;feature&gt;/</span> comporte trois couches :</p>
+<ul>
+  <li><strong>domain</strong> — les modèles (classes Dart) ;</li>
+  <li><strong>data</strong> — l'accès aux données (repositories Supabase, providers) ;</li>
+  <li><strong>presentation</strong> — les écrans, widgets et providers d'interface.</li>
+</ul>
+<p>Le socle commun (thème, routeur, widgets réutilisables, constantes) est dans
+<span class="small">lib/core/</span>. Les fonctionnalités : auth, profile, shops,
+products, catalog, requests, reservations, orders, reviews, map, dashboard,
+notifications, activity, home.</p>
+
+<!-- ================= 7 ================= -->
+<h2><span class="num">7</span>Éléments simulés</h2>
+<table>
+  <tr><th>Élément</th><th>Simulation</th></tr>
+  <tr><td>Paiement (acompte)</td><td>Faux écran de paiement ; aucune transaction réelle.</td></tr>
+  <tr><td>2FA par SMS</td><td>Le code n'est pas envoyé : il est affiché à l'écran.</td></tr>
+  <tr><td>Vérification KYC / CNI</td><td>Dépôt de pièces + validation simulée (pas de revue humaine).</td></tr>
+</table>
+<div class="tip">Ces choix rendent la démonstration <b>gratuite et autonome</b> ; les
+branchements réels (fournisseur SMS, mobile money, revue KYC) sont prévus ensuite
+sans refonte.</div>
+
+<!-- ================= 8 ================= -->
+<h2><span class="num">8</span>Base de données &amp; sécurité</h2>
+<p>Base <strong>PostgreSQL</strong> (Supabase). Tables principales :</p>
+<table>
+  <tr><th>Table</th><th>Rôle</th></tr>
+  <tr><td>profiles</td><td>Profil utilisateur (rôle, géoloc, note, vérification, avatar).</td></tr>
+  <tr><td>shops / products</td><td>Boutiques (logo, bannière) et leurs produits (stock, promo, type de vente).</td></tr>
+  <tr><td>requests / offers</td><td>Demandes instantanées et offres (avec contre-offre).</td></tr>
+  <tr><td>reservations</td><td>Réservations + acompte + créneau.</td></tr>
+  <tr><td>orders / order_items</td><td>Commandes, livraison (pool + suivi par étapes).</td></tr>
+  <tr><td>reviews</td><td>Avis 5★ + commentaire (liés à une réservation ou une commande).</td></tr>
+  <tr><td>notifications / activity_log</td><td>Notifications temps réel et journal d'audit.</td></tr>
+</table>
+<p class="small">Sécurité : politiques RLS par table, fonctions
+<em>security definer</em> pour les opérations sensibles (acceptation d'offre,
+livraison…), Storage à buckets publics (avatars, images de boutique) et privé (KYC).</p>
+
+<!-- ================= 9 ================= -->
+<h2><span class="num">9</span>Livrables &amp; jalons</h2>
+<table>
+  <tr><th>Jalon</th><th>Contenu</th></tr>
+  <tr><td>Socle</td><td>Auth + 2FA, rôles, thème, navigation, base de données.</td></tr>
+  <tr><td>Catalogue</td><td>Boutiques, produits, recherche, fiches, accueil vitrine.</td></tr>
+  <tr><td>Demande instantanée</td><td>Publication, offres temps réel, négociation, acceptation.</td></tr>
+  <tr><td>Réservation</td><td>Acompte simulé, créneaux, automatisations de stock.</td></tr>
+  <tr><td>Livraison</td><td>Pool de livreurs, suivi étape par étape.</td></tr>
+  <tr><td>Confiance</td><td>Notation croisée + commentaires, KYC/CNI, historique.</td></tr>
+  <tr><td>Finitions</td><td>Proximité, promo, gros/détail, avatars/bannières, logo, docs.</td></tr>
+</table>
+
+<!-- ================= 10 ================= -->
+<h2><span class="num">10</span>Comptes de démonstration</h2>
+<p>Mot de passe commun : <strong>demo1234</strong>.</p>
+<table>
+  <tr><th>Email</th><th>Rôle</th><th>Lieu / boutique</th></tr>
+  <tr><td>samira@demo.ci</td><td>Consommatrice</td><td>Cocody</td></tr>
+  <tr><td>raoul@demo.ci</td><td>Commerçant</td><td>« Chez Brou », Adjamé</td></tr>
+  <tr><td>jacob@demo.ci</td><td>Producteur</td><td>« Ferme Kouamé », Agboville</td></tr>
+  <tr><td>kader@demo.ci</td><td>Livreur</td><td>Yopougon</td></tr>
+  <tr><td>anais@demo.ci</td><td>Commerçante</td><td>« Maquis Fatim », Treichville</td></tr>
+</table>
+
+<hr>
+<p class="small">Dioula Market — Cahier des charges • Projet de fin de module Flutter •
+Encadreur : Mr Youssouf TARPILGA. Document généré aux couleurs de l'application.</p>
+
+</body>
+</html>
